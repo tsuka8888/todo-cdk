@@ -1,59 +1,61 @@
 import * as AWS from 'aws-sdk'
-const db = new AWS.DynamoDB.DocumentClient()
+import {
+  DeleteItemCommand,
+  DynamoDBClient,
+  GetItemCommand,
+  PutItemCommand,
+  QueryCommand,
+} from '@aws-sdk/client-dynamodb'
+
+const REGION = 'ap-northeast-1'
+const dbClient = new DynamoDBClient({ region: REGION })
+
+interface Todo {
+  userId: string
+  todoId: string
+  content: string
+  done: boolean
+}
 
 export class TodoRepository {
-  private TABLE_NAME: string
+  private TODO_TABLE_NAME: string
 
   constructor() {
-    this.TABLE_NAME = process.env.TABLE_NAME || ''
+    this.TODO_TABLE_NAME = process.env.TABLE_NAME || ''
   }
 
-  public async getTodoList() {
-    const params = {
-      TableName: this.TABLE_NAME,
+  public async getTodoList(userId: string) {
+    const params: AWS.DynamoDB.DocumentClient.QueryInput = {
+      KeyConditionExpression: 'userId = :userId',
+      ExpressionAttributeValues: { ':userId': userId },
+      ProjectionExpression: 'userId, todoId, content, done',
+      TableName: this.TODO_TABLE_NAME,
     }
-    return await db.scan(params).promise()
+    const result = await await dbClient.send(new QueryCommand(params))
+    return result.Items
   }
 
-  public async getTodo(id: string) {
-    const params = {
-      TableName: this.TABLE_NAME,
-      Key: { id },
-    }
-    return await db.get(params).promise()
-  }
-
-  public async postTodo(body: any) {
-    const params = {
-      TableName: this.TABLE_NAME,
+  public async updateTodo(todo: Todo) {
+    const params: AWS.DynamoDB.DocumentClient.PutItemInput = {
       Item: {
-        id: body.id,
-        content: body.content,
-        done: body.done,
+        userId: todo.userId,
+        todoId: todo.todoId,
+        content: todo.content,
+        done: todo.done,
       },
+      TableName: this.TODO_TABLE_NAME,
     }
-    return await db.put(params).promise()
+    await dbClient.send(new PutItemCommand(params))
   }
 
-  public async putTodo(id: string, body: any) {
-    const params = {
-      TableName: this.TABLE_NAME,
-      Key: { id },
-      UpdateExpression:
-        'set content=:content, done=:done',
-      ExpressionAttributeValues: {
-        ':content': body.content,
-        ':done': body.done,
+  public async deleteTodo(userId: string, todoId: string) {
+    const params: AWS.DynamoDB.DocumentClient.DeleteItemInput = {
+      Key: {
+        userId,
+        todoId,
       },
+      TableName: this.TODO_TABLE_NAME,
     }
-    return await db.update(params).promise()
-  }
-
-  public async deleteTodo(id: string) {
-    const params = {
-      TableName: this.TABLE_NAME,
-      Key: { id },
-    }
-    return await db.delete(params).promise()
+    await dbClient.send(new DeleteItemCommand(params))
   }
 }

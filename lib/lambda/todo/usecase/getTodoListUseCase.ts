@@ -1,15 +1,7 @@
+import { DeleteTodoRequest } from '../handler/delete-todo'
+import { GetTodoListRequest } from '../handler/get-todo-list'
+import { UpdateTodoRequest } from '../handler/update-todo'
 import { TodoRepository } from '../repository/todoRepository'
-
-export type TodoType = {
-  id: string
-  content: string
-  done: boolean
-}
-export type UpdateTodoType = {
-  id: string
-  content: string
-  done: boolean
-}
 
 export class TodoUseCase {
   private repository: TodoRepository
@@ -18,19 +10,13 @@ export class TodoUseCase {
     this.repository = new TodoRepository()
   }
 
-  public async getTodoList() {
-    return await this.repository.getTodoList()
+  public async getTodoList({ userId }: GetTodoListRequest) {
+    return await this.repository.getTodoList(userId)
   }
-  public async getTodo(id: string) {
-    return await this.repository.getTodo(id)
+  public async updateTodo(todo: UpdateTodoRequest) {
+    return await this.repository.updateTodo(todo)
   }
-  public async registerTodo(body: TodoType) {
-    return await this.repository.postTodo(body)
-  }
-  public async updateTodo(id: string, body: UpdateTodoType) {
-    return await this.repository.putTodo(id, body)
-  }
-  public async deleteTodo(id: string) {
-    return await this.repository.deleteTodo(id)
+  public async deleteTodo({ userId, todoId }: DeleteTodoRequest) {
+    return await this.repository.deleteTodo(userId, todoId)
   }
 }

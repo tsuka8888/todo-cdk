@@ -1,13 +1,14 @@
-import * as cdk from '@aws-cdk/core'
-import * as dynamodb from '@aws-cdk/aws-dynamodb'
-import * as lambda from '@aws-cdk/aws-lambda'
-import * as apigateway from '@aws-cdk/aws-apigateway'
+import * as dynamodb from 'aws-cdk-lib/aws-dynamodb'
+import * as lambda from 'aws-cdk-lib/aws-lambda'
+import * as apigateway from 'aws-cdk-lib/aws-apigateway'
 import { addCorsOptions, TodoCdkStack } from '../../todo-cdk-stack'
 
 export class TodoConstructor {
   constructor(scope: TodoCdkStack) {
-    const table = new dynamodb.Table(scope, 'todoTable', {
-      partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+    const todoMaster = new dynamodb.Table(scope, 'todoMaster', {
+      tableName: 'todoMaster',
+      partitionKey: { name: 'userId', type: dynamodb.AttributeType.STRING },
+      sortKey: { name: 'todoId', type: dynamodb.AttributeType.STRING },
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
     })
 
@@ -15,7 +16,7 @@ export class TodoConstructor {
       code: new lambda.AssetCode('lib/lambda/todo'),
       runtime: lambda.Runtime.NODEJS_14_X,
       environment: {
-        TABLE_NAME: table.tableName,
+        TODO_MASTER_TABLE_NAME: todoMaster.tableName,
       },
     }
 
@@ -24,47 +25,47 @@ export class TodoConstructor {
       ...lambdaOptions,
       handler: 'handler/get-todo-list.handler',
     })
-    const getTodoLambda = new lambda.Function(scope, 'getTodoLambda', {
-      ...lambdaOptions,
-      handler: 'handler/get-todo.handler',
-    })
-    const postTodoLambda = new lambda.Function(scope, 'postTodoLambda', {
+    const updateTodoLambda = new lambda.Function(scope, 'updateTodoLambda', {
       ...lambdaOptions,
       handler: 'handler/post-todo.handler',
-    })
-    const putTodoLambda = new lambda.Function(scope, 'putTodoLambda', {
-      ...lambdaOptions,
-      handler: 'handler/put-todo.handler',
     })
     const deleteTodoLambda = new lambda.Function(scope, 'deleteTodoLambda', {
       ...lambdaOptions,
       handler: 'handler/delete-todo.handler',
     })
 
-    table.grantReadWriteData(getTodoListLambda)
-    table.grantReadWriteData(getTodoLambda)
-    table.grantReadWriteData(postTodoLambda)
-    table.grantReadWriteData(putTodoLambda)
-    table.grantReadWriteData(deleteTodoLambda)
+    todoMaster.grantReadWriteData(getTodoListLambda)
+    todoMaster.grantReadWriteData(updateTodoLambda)
+    todoMaster.grantReadWriteData(deleteTodoLambda)
 
     const todos = scope.agw.root.addResource('todos')
-    todos.addMethod('GET', new apigateway.LambdaIntegration(getTodoListLambda))
-    todos.addMethod('POST', new apigateway.LambdaIntegration(postTodoLambda))
-    addCorsOptions(todos)
-
-    const todosWithId = todos.addResource('{id}')
-    todosWithId.addMethod(
+    todos.addMethod(
       'GET',
-      new apigateway.LambdaIntegration(getTodoLambda)
+      new apigateway.LambdaIntegration(getTodoListLambda, {
+        requestTemplates: {
+          'application/json':
+            '{ "userId": "$method.request.querystring.userId" }',
+        },
+      })
     )
-    todosWithId.addMethod(
-      'PUT',
-      new apigateway.LambdaIntegration(putTodoLambda)
+    todos.addMethod(
+      'POST',
+      new apigateway.LambdaIntegration(updateTodoLambda, {
+        requestTemplates: {
+          'application/json':
+            '{ "userId": $input.json("$.userId"), "todoId": $input.json("$.todoId"), "content": $input.json("$.content"), "done": $input.json("$.done") }',
+        },
+      })
     )
-    todosWithId.addMethod(
+    todos.addMethod(
       'DELETE',
-      new apigateway.LambdaIntegration(deleteTodoLambda)
+      new apigateway.LambdaIntegration(deleteTodoLambda, {
+        requestTemplates: {
+          'application/json':
+            '{ "userId": $input.json("$.userId"), "todoId": $input.json("$.todoId") }',
+        },
+      })
     )
-    addCorsOptions(todosWithId)
+    addCorsOptions(todos)
   }
 }

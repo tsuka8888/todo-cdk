@@ -1,18 +1,20 @@
-import { String } from 'aws-sdk/clients/cloudhsm'
 import { TodoUseCase } from '../usecase/getTodoListUseCase'
 
-export interface DeleteTodoRequest {
+export interface UpdateTodoRequest {
   userId: string
-  todoId: String
+  todoId: string
+  content: string
+  done: boolean
 }
 
-export const handler = async (event: DeleteTodoRequest) => {
+export const handler = async (event: UpdateTodoRequest) => {
+  console.log('event', event)
   const todoUseCase = new TodoUseCase()
   try {
-    const response = await todoUseCase.deleteTodo(event)
+    const result = await todoUseCase.updateTodo(event)
     return {
       statusCode: 200,
-      body: JSON.stringify(response),
+      body: JSON.stringify(result),
     }
   } catch (error) {
     return {

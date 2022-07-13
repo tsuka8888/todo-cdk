@@ -1,12 +1,31 @@
-import { TodoUseCase } from "../usecase/getTodoListUseCase";
+import { TodoUseCase } from '../usecase/getTodoListUseCase'
 
-export const handler = async (event: any = {}): Promise<any> => {
-  const getTodoListUseCase = new TodoUseCase();
+interface Todo {
+  userId: string
+  todoId: string
+  content: string
+  done: string
+}
+export interface GetTodoListRequest {
+  userId: string
+}
+export interface GetTodoListResponse {
+  TodoList: Todo[]
+}
+
+export const handler = async (event: GetTodoListRequest) => {
+  const getTodoListUseCase = new TodoUseCase()
 
   try {
-    const response = await getTodoListUseCase.getTodoList();
-    return { statusCode: 200, body: JSON.stringify(response), headers: { "Access-Control-Allow-Origin": "*" } };
+    const result = await getTodoListUseCase.getTodoList(event)
+    return {
+      statusCode: 200,
+      body: JSON.stringify(result),
+    }
   } catch (error) {
-    return { statusCode: 500, body: JSON.stringify(error), headers: { "Access-Control-Allow-Origin": "*" } };
+    return {
+      statusCode: 500,
+      body: error,
+    }
   }
-};
+}

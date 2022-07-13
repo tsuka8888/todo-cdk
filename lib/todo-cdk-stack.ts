@@ -1,12 +1,11 @@
-import * as cdk from '@aws-cdk/core'
-import * as apigateway from '@aws-cdk/aws-apigateway'
+import { App, Stack, StackProps } from 'aws-cdk-lib'
+import * as apigateway from 'aws-cdk-lib/aws-apigateway'
 import { TodoConstructor } from './constructor/todo/todoConstructor'
-import { UserConstructor } from './constructor/user/userConstructor'
 
-export class TodoCdkStack extends cdk.Stack {
+export class TodoCdkStack extends Stack {
   readonly agw: apigateway.RestApi
 
-  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
+  constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props)
 
     this.agw = new apigateway.RestApi(this, 'todoApi', {
@@ -14,7 +13,6 @@ export class TodoCdkStack extends cdk.Stack {
     })
 
     new TodoConstructor(this)
-    new UserConstructor(this)
   }
 }
 
