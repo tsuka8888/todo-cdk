@@ -1,8 +1,9 @@
 import { TodoUseCase, UpdateTodoType } from '../usecase/getTodoListUseCase'
 
 export const handler = async (event: any = {}): Promise<any> => {
+  console.log('event', event)
   const todoUseCase = new TodoUseCase()
-  const id: string = event.pathParameter.id
+  const id: string = event.pathParameters.id
   try {
     const body: UpdateTodoType = JSON.parse(event.body)
     const response = await todoUseCase.updateTodo(id, body)

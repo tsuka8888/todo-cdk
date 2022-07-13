@@ -2,7 +2,7 @@ import { TodoUseCase } from '../usecase/getTodoListUseCase'
 
 export const handler = async (event: any = {}): Promise<any> => {
   const getTodoUseCase = new TodoUseCase()
-  const id = event.pathParameter.id
+  const id = event.pathParameters.id
   try {
     const response = await getTodoUseCase.getTodo(id)
     return {

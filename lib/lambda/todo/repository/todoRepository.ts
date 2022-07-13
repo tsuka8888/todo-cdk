@@ -40,11 +40,10 @@ export class TodoRepository {
       TableName: this.TABLE_NAME,
       Key: { id },
       UpdateExpression:
-        'set info.id = :id, info.content=:content, info.done=:done',
+        'set content=:content, done=:done',
       ExpressionAttributeValues: {
-        ':id': id,
         ':content': body.content,
-        ':done': body.id,
+        ':done': body.done,
       },
     }
     return await db.update(params).promise()
