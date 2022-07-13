@@ -23,7 +23,7 @@ jobs:
           node-version: '16.x'
 
       - name: Setup dependencies
-        run: npm i -g npm@8.5.5 && npm ci
+        run: npm i -g npm@8.7.0 && npm ci
 
       - name: Build
         run: npm run build
