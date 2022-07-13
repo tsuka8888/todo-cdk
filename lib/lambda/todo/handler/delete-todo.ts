@@ -1,9 +1,8 @@
-import { String } from 'aws-sdk/clients/cloudhsm'
 import { TodoUseCase } from '../usecase/getTodoListUseCase'
 
 export interface DeleteTodoRequest {
   userId: string
-  todoId: String
+  todoId: string
 }
 
 export const handler = async (event: DeleteTodoRequest) => {
