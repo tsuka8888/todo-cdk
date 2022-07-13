@@ -1,10 +1,12 @@
-import * as AWS from 'aws-sdk'
+// import * as AWS from 'aws-sdk'
 import {
   DeleteItemCommand,
+  DeleteItemInput,
   DynamoDBClient,
-  GetItemCommand,
   PutItemCommand,
+  PutItemInput,
   QueryCommand,
+  QueryInput,
 } from '@aws-sdk/client-dynamodb'
 
 const REGION = 'ap-northeast-1'
@@ -25,9 +27,9 @@ export class TodoRepository {
   }
 
   public async getTodoList(userId: string) {
-    const params: AWS.DynamoDB.DocumentClient.QueryInput = {
+    const params: QueryInput = {
       KeyConditionExpression: 'userId = :userId',
-      ExpressionAttributeValues: { ':userId': userId },
+      ExpressionAttributeValues: { ':userId': { S: userId } },
       ProjectionExpression: 'userId, todoId, content, done',
       TableName: this.TODO_TABLE_NAME,
     }
@@ -36,12 +38,12 @@ export class TodoRepository {
   }
 
   public async updateTodo(todo: Todo) {
-    const params: AWS.DynamoDB.DocumentClient.PutItemInput = {
+    const params: PutItemInput = {
       Item: {
-        userId: todo.userId,
-        todoId: todo.todoId,
-        content: todo.content,
-        done: todo.done,
+        userId: { S: todo.userId },
+        todoId: { S: todo.todoId },
+        content: { S: todo.content },
+        done: { BOOL: todo.done },
       },
       TableName: this.TODO_TABLE_NAME,
     }
@@ -49,10 +51,10 @@ export class TodoRepository {
   }
 
   public async deleteTodo(userId: string, todoId: string) {
-    const params: AWS.DynamoDB.DocumentClient.DeleteItemInput = {
+    const params: DeleteItemInput = {
       Key: {
-        userId,
-        todoId,
+        userId: { S: userId },
+        todoId: { S: todoId },
       },
       TableName: this.TODO_TABLE_NAME,
     }
