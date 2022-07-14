@@ -11,6 +11,7 @@ export class TodoUseCase {
   }
 
   public async getTodoList({ userId }: GetTodoListRequest) {
+    if (userId === '') throw new Error('入力項目に誤りがあります。')
     return await this.repository.getTodoList(userId)
   }
   public async updateTodo(todo: UpdateTodoRequest) {
