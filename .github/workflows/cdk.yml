@@ -17,7 +17,10 @@ jobs:
           node-version: '16.x'
 
       - name: Setup dependencies
-        run: npm i -g npm@8.7.0 && npm ci
+        run: npm i --location=global npm@8.7.0 && npm ci
+
+      - name: Npm install
+        run: npm install
 
       - name: Build
         run: npm run build
