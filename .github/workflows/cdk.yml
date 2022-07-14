@@ -19,9 +19,6 @@ jobs:
       - name: Setup dependencies
         run: npm i --location=global npm@8.7.0 && npm ci
 
-      - name: Npm install
-        run: npm install
-
       - name: Build
         run: npm run build
 
