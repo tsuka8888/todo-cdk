@@ -1,7 +1,7 @@
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb'
 import * as lambda from 'aws-cdk-lib/aws-lambda'
 import * as apigateway from 'aws-cdk-lib/aws-apigateway'
-import { addCorsOptions, TodoCdkStack } from '../../todo-cdk-stack'
+import { addCorsOptions, TodoCdkStack } from './todo-cdk-stack'
 
 export class TodoConstructor {
   constructor(scope: TodoCdkStack) {
@@ -12,12 +12,19 @@ export class TodoConstructor {
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
     })
 
-    const lambdaOptions = {
+    const bundleLayer = new lambda.LayerVersion(scope, 'layer', {
+      code: lambda.AssetCode.fromAsset('path'),
+      compatibleRuntimes: [lambda.Runtime.NODEJS_16_X],
+    })
+
+    const lambdaOptions: lambda.FunctionProps = {
+      handler: '',
       code: new lambda.AssetCode('lib/lambda/todo'),
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_16_X,
       environment: {
         TODO_MASTER_TABLE_NAME: todoMaster.tableName,
       },
+      layers: [bundleLayer],
     }
 
     // 一覧取得lambda

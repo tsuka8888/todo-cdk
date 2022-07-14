@@ -8,6 +8,7 @@
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",
+    "check:tsc": "tsc --noEmit",
     "cdk": "cdk",
     "cdk:deploy": "cdk deploy --require-approval never"
   },
@@ -16,7 +17,9 @@
     "@types/jest": "^26.0.10",
     "@types/node": "10.17.27",
     "aws-cdk": "^2.31.2",
+    "husky": "^8.0.1",
     "jest": "^26.4.2",
+    "lint-staged": "^13.0.3",
     "ts-jest": "^26.2.0",
     "ts-node": "^9.0.0",
     "typescript": "~3.9.7"
@@ -24,5 +27,13 @@
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.128.0",
     "aws-cdk-lib": "^2.31.2"
-  }
+  },
+  "lint-staged": {
+    "*.{js,ts,jsx,tsx}": [
+      "prettier --write",
+      "eslint --cache --max-warnings 0 --fix",
+      "secretlint",
+      "bash -c 'npm run check:tsc'"
+    ]
+  },
 }

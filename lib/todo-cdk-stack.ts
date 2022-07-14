@@ -2,7 +2,7 @@ import { App, Stack, StackProps } from 'aws-cdk-lib'
 import * as apigateway from 'aws-cdk-lib/aws-apigateway'
 import { Certificate } from 'aws-cdk-lib/aws-certificatemanager'
 import * as ssm from 'aws-cdk-lib/aws-ssm'
-import { TodoConstructor } from './constructor/todo/todoConstructor'
+import { TodoConstructor } from './todoConstructor'
 
 export class TodoCdkStack extends Stack {
   readonly agw: apigateway.RestApi
