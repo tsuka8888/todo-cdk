@@ -50,6 +50,7 @@ export class TodoConstructor {
     todos.addMethod(
       'GET',
       new apigateway.LambdaIntegration(getTodoListLambda, {
+        proxy: false,
         requestTemplates: {
           'application/json':
             '{ "userId": "$method.request.querystring.userId" }',
@@ -59,6 +60,7 @@ export class TodoConstructor {
     todos.addMethod(
       'POST',
       new apigateway.LambdaIntegration(updateTodoLambda, {
+        proxy: false,
         requestTemplates: {
           'application/json':
             '{ "userId": $input.json("$.userId"), "todoId": $input.json("$.todoId"), "content": $input.json("$.content"), "done": $input.json("$.done") }',
@@ -68,6 +70,7 @@ export class TodoConstructor {
     todos.addMethod(
       'DELETE',
       new apigateway.LambdaIntegration(deleteTodoLambda, {
+        proxy: false,
         requestTemplates: {
           'application/json':
             '{ "userId": $input.json("$.userId"), "todoId": $input.json("$.todoId") }',
