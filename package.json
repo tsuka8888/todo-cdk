@@ -35,5 +35,5 @@
       "secretlint",
       "bash -c 'npm run check:tsc'"
     ]
-  },
+  }
 }
