@@ -30,7 +30,7 @@ export class TodoRepository {
       ProjectionExpression: 'userId, todoId, content, done',
       TableName: TODO_MASTER_TABLE_NAME,
     }
-    const result = await await dbClient.send(new QueryCommand(params))
+    const result = await dbClient.send(new QueryCommand(params))
     return result.Items
   }
 
