@@ -2,6 +2,7 @@ import * as dynamodb from 'aws-cdk-lib/aws-dynamodb'
 import * as lambda from 'aws-cdk-lib/aws-lambda'
 import * as apigateway from 'aws-cdk-lib/aws-apigateway'
 import { addCorsOptions, TodoCdkStack } from './todo-cdk-stack'
+import { PreProcess } from './preprocess'
 
 export class TodoConstructor {
   constructor(scope: TodoCdkStack) {
@@ -13,7 +14,7 @@ export class TodoConstructor {
     })
 
     const bundleLayer = new lambda.LayerVersion(scope, 'layer', {
-      code: lambda.AssetCode.fromAsset('path'),
+      code: lambda.AssetCode.fromAsset(PreProcess.BUNDLE_LAYER_BASE_DIR),
       compatibleRuntimes: [lambda.Runtime.NODEJS_16_X],
     })
 
