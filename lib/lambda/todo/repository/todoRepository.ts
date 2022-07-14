@@ -10,6 +10,7 @@ import {
 } from '@aws-sdk/client-dynamodb'
 
 const REGION = 'ap-northeast-1'
+const TODO_MASTER_TABLE_NAME = process.env.TODO_MASTER_TABLE_NAME ?? ''
 const dbClient = new DynamoDBClient({ region: REGION })
 
 interface Todo {
@@ -20,18 +21,14 @@ interface Todo {
 }
 
 export class TodoRepository {
-  private TODO_TABLE_NAME: string
-
-  constructor() {
-    this.TODO_TABLE_NAME = process.env.TABLE_NAME || ''
-  }
+  constructor() {}
 
   public async getTodoList(userId: string) {
     const params: QueryInput = {
       KeyConditionExpression: 'userId = :userId',
       ExpressionAttributeValues: { ':userId': { S: userId } },
       ProjectionExpression: 'userId, todoId, content, done',
-      TableName: this.TODO_TABLE_NAME,
+      TableName: TODO_MASTER_TABLE_NAME,
     }
     const result = await await dbClient.send(new QueryCommand(params))
     return result.Items
@@ -45,7 +42,7 @@ export class TodoRepository {
         content: { S: todo.content },
         done: { BOOL: todo.done },
       },
-      TableName: this.TODO_TABLE_NAME,
+      TableName: TODO_MASTER_TABLE_NAME,
     }
     await dbClient.send(new PutItemCommand(params))
   }
@@ -56,7 +53,7 @@ export class TodoRepository {
         userId: { S: userId },
         todoId: { S: todoId },
       },
-      TableName: this.TODO_TABLE_NAME,
+      TableName: TODO_MASTER_TABLE_NAME,
     }
     await dbClient.send(new DeleteItemCommand(params))
   }
