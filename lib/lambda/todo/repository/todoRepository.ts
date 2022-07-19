@@ -3,7 +3,6 @@ import {
   DeleteItemCommand,
   DeleteItemInput,
   DynamoDBClient,
-  GetItemCommand,
   PutItemCommand,
   PutItemInput,
   QueryCommand,
