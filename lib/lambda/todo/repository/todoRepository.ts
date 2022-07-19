@@ -8,10 +8,12 @@ import {
   PutItemInput,
   QueryCommand,
 } from '@aws-sdk/client-dynamodb'
+import {DynamoDBDocumentClient} from '@aws-sdk/lib-dynamodb'
 
 const REGION = 'ap-northeast-1'
 const TODO_MASTER_TABLE_NAME = process.env.TODO_MASTER_TABLE_NAME ?? ''
 const dbClient = new DynamoDBClient({ region: REGION })
+const documentClient = DynamoDBDocumentClient.from(dbClient)
 
 interface Todo {
   userId: string
@@ -31,7 +33,7 @@ export class TodoRepository {
         ProjectionExpression: 'userId, todoId, content, done',
         TableName: TODO_MASTER_TABLE_NAME,
       })
-      const result = await dbClient.send(command)
+      const result = await documentClient.send(command)
       console.log(result.Items)
       return result.Items
     } catch (e) {

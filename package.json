@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.128.0",
+    "@aws-sdk/lib-dynamodb": "^3.131.0",
     "aws-cdk-lib": "^2.31.2"
   },
   "lint-staged": {
