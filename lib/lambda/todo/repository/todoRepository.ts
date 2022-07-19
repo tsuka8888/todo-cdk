@@ -4,11 +4,8 @@ import {
   DeleteItemInput,
   DynamoDBClient,
   GetItemCommand,
-  GetItemCommandInput,
   PutItemCommand,
   PutItemInput,
-  QueryCommand,
-  QueryInput,
 } from '@aws-sdk/client-dynamodb'
 
 const REGION = 'ap-northeast-1'
@@ -26,12 +23,12 @@ export class TodoRepository {
   constructor() {}
 
   public async getTodoList(userId: string) {
-    const params: GetItemCommandInput = {
+    const command = new GetItemCommand({
       Key: { userId: { S: userId } },
       TableName: TODO_MASTER_TABLE_NAME,
-      ProjectionExpression: 'userId, todoId, content, done',
-    }
-    const result = await dbClient.send(new GetItemCommand(params))
+    })
+    console.log(dbClient)
+    const result = await dbClient.send(command)
     console.log(result)
     return result
   }
