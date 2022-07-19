@@ -23,14 +23,19 @@ export class TodoRepository {
   constructor() {}
 
   public async getTodoList(userId: string) {
-    const command = new GetItemCommand({
-      Key: { userId: { S: userId } },
-      TableName: TODO_MASTER_TABLE_NAME,
-    })
-    console.log(dbClient)
-    const result = await dbClient.send(command)
-    console.log(result)
-    return result
+    try {
+      const command = new GetItemCommand({
+        Key: { userId: { S: userId } },
+        TableName: TODO_MASTER_TABLE_NAME,
+      })
+      console.log(dbClient)
+      const result = await dbClient.send(command)
+      console.log(result)
+      return result
+    } catch (e) {
+      console.log(e)
+      throw new Error(e)
+    }
   }
 
   public async updateTodo(todo: Todo) {
