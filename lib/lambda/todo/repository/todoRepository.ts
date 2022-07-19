@@ -7,23 +7,17 @@ import {
   PutItemInput,
 } from '@aws-sdk/client-dynamodb'
 import {DynamoDBDocumentClient, QueryCommand} from '@aws-sdk/lib-dynamodb'
+import { GetTodoListResponse, Todo } from '../handler/get-todo-list'
 
 const REGION = 'ap-northeast-1'
 const TODO_MASTER_TABLE_NAME = process.env.TODO_MASTER_TABLE_NAME ?? ''
 const dbClient = new DynamoDBClient({ region: REGION })
 const documentClient = DynamoDBDocumentClient.from(dbClient)
 
-interface Todo {
-  userId: string
-  todoId: string
-  content: string
-  done: boolean
-}
-
 export class TodoRepository {
   constructor() {}
 
-  public async getTodoList(userId: string) {
+  public async getTodoList(userId: string): Promise<GetTodoListResponse> {
     try {
       const command = new QueryCommand({
         KeyConditionExpression: 'userId = :userId',
@@ -32,10 +26,10 @@ export class TodoRepository {
         TableName: TODO_MASTER_TABLE_NAME,
       })
       const result = await documentClient.send(command)
-      console.log(result.Items)
-      return result.Items
+      return {
+        todoList: result.Items as Todo[] ?? []
+      }
     } catch (e) {
-      console.log(e)
       throw new Error(e)
     }
   }

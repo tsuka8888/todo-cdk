@@ -1,5 +1,5 @@
 import { DeleteTodoRequest } from '../handler/delete-todo'
-import { GetTodoListRequest } from '../handler/get-todo-list'
+import { GetTodoListRequest, GetTodoListResponse } from '../handler/get-todo-list'
 import { UpdateTodoRequest } from '../handler/update-todo'
 import { TodoRepository } from '../repository/todoRepository'
 
@@ -10,7 +10,7 @@ export class TodoUseCase {
     this.repository = new TodoRepository()
   }
 
-  public async getTodoList({ userId }: GetTodoListRequest) {
+  public async getTodoList({ userId }: GetTodoListRequest): Promise<GetTodoListResponse> {
     if (userId === '') throw new Error('入力項目に誤りがあります。')
     return await this.repository.getTodoList(userId)
   }
