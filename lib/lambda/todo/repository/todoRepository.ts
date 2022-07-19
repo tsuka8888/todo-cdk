@@ -3,6 +3,8 @@ import {
   DeleteItemCommand,
   DeleteItemInput,
   DynamoDBClient,
+  GetItemCommand,
+  GetItemCommandInput,
   PutItemCommand,
   PutItemInput,
   QueryCommand,
@@ -24,14 +26,14 @@ export class TodoRepository {
   constructor() {}
 
   public async getTodoList(userId: string) {
-    const params: QueryInput = {
-      KeyConditionExpression: 'userId = :userId',
-      ExpressionAttributeValues: { ':userId': { S: userId } },
-      ProjectionExpression: 'userId, todoId, content, done',
+    const params: GetItemCommandInput = {
+      Key: { userId: { S: userId } },
       TableName: TODO_MASTER_TABLE_NAME,
+      ProjectionExpression: 'userId, todoId, content, done',
     }
-    const result = await dbClient.send(new QueryCommand(params))
-    return result.Items
+    const result = await dbClient.send(new GetItemCommand(params))
+    console.log(result)
+    return result
   }
 
   public async updateTodo(todo: Todo) {
