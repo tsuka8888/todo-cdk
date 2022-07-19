@@ -6,6 +6,7 @@ import {
   GetItemCommand,
   PutItemCommand,
   PutItemInput,
+  QueryCommand,
 } from '@aws-sdk/client-dynamodb'
 
 const REGION = 'ap-northeast-1'
@@ -24,14 +25,15 @@ export class TodoRepository {
 
   public async getTodoList(userId: string) {
     try {
-      const command = new GetItemCommand({
-        Key: { userId: { S: userId } },
+      const command = new QueryCommand({
+        KeyConditionExpression: 'userId = :userId',
+        ExpressionAttributeValues: { ':userId': { S: userId } },
+        ProjectionExpression: 'userId, todoId, content, done',
         TableName: TODO_MASTER_TABLE_NAME,
       })
-      console.log(dbClient)
       const result = await dbClient.send(command)
-      console.log(result)
-      return result
+      console.log(result.Items)
+      return result.Items
     } catch (e) {
       console.log(e)
       throw new Error(e)
