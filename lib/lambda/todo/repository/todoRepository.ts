@@ -5,9 +5,8 @@ import {
   DynamoDBClient,
   PutItemCommand,
   PutItemInput,
-  QueryCommand,
 } from '@aws-sdk/client-dynamodb'
-import {DynamoDBDocumentClient} from '@aws-sdk/lib-dynamodb'
+import {DynamoDBDocumentClient, QueryCommand} from '@aws-sdk/lib-dynamodb'
 
 const REGION = 'ap-northeast-1'
 const TODO_MASTER_TABLE_NAME = process.env.TODO_MASTER_TABLE_NAME ?? ''
@@ -28,7 +27,7 @@ export class TodoRepository {
     try {
       const command = new QueryCommand({
         KeyConditionExpression: 'userId = :userId',
-        ExpressionAttributeValues: { ':userId': { S: userId } },
+        ExpressionAttributeValues: { ':userId': userId },
         ProjectionExpression: 'userId, todoId, content, done',
         TableName: TODO_MASTER_TABLE_NAME,
       })
