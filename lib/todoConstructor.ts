@@ -1,7 +1,7 @@
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb'
 import * as lambda from 'aws-cdk-lib/aws-lambda'
 import * as apigateway from 'aws-cdk-lib/aws-apigateway'
-import { addCorsOptions, TodoCdkStack } from './todo-cdk-stack'
+import { TodoCdkStack } from './todo-cdk-stack'
 import { PreProcess } from './preprocess'
 
 export class TodoConstructor {
@@ -77,6 +77,5 @@ export class TodoConstructor {
         },
       })
     )
-    addCorsOptions(todos)
   }
 }
