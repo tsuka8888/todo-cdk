@@ -1,8 +1,9 @@
 import { App, Stack, StackProps } from 'aws-cdk-lib'
 import * as apigateway from 'aws-cdk-lib/aws-apigateway'
-import { Certificate } from 'aws-cdk-lib/aws-certificatemanager'
 import * as ssm from 'aws-cdk-lib/aws-ssm'
+import { Certificate } from 'aws-cdk-lib/aws-certificatemanager'
 import { TodoConstructor } from './todoConstructor'
+import { Metric } from 'aws-cdk-lib/aws-cloudwatch'
 
 export class TodoCdkStack extends Stack {
   readonly agw: apigateway.RestApi
@@ -34,9 +35,16 @@ export class TodoCdkStack extends Stack {
         allowOrigins: apigateway.Cors.ALL_ORIGINS,
         allowMethods: apigateway.Cors.ALL_METHODS,
         allowHeaders: apigateway.Cors.DEFAULT_HEADERS,
-        statusCode: 200
+        statusCode: 200,
       },
-      
+    })
+
+    const apiServerErrorMetric = new Metric({
+      metricName: '5XXError',
+      namespace: 'AWS/ApiGateway',
+      dimensionsMap: {
+        ApiName: 'Todo API',
+      },
     })
 
     new TodoConstructor(this)
