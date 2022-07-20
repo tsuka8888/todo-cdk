@@ -13,21 +13,14 @@ export interface GetTodoListResponse {
   todoList: Todo[]
 }
 
-export const handler = async (event: GetTodoListRequest) => {
-
+export const handler = async (event: GetTodoListRequest) : Promise<GetTodoListResponse | undefined> => {
   const getTodoListUseCase = new TodoUseCase()
 
   try {
     const result = await getTodoListUseCase.getTodoList(event)
-    return {
-      statusCode: 200,
-      body: JSON.stringify(result)
-    }    
+    return result
   } catch (error) {
     console.log(error)
-    return {
-      statusCode: 500,
-      body: error,
-    }
+    return
   }
 }

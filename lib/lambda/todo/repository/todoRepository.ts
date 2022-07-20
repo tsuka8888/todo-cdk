@@ -6,7 +6,7 @@ import {
   PutItemCommand,
   PutItemInput,
 } from '@aws-sdk/client-dynamodb'
-import {DynamoDBDocumentClient, QueryCommand} from '@aws-sdk/lib-dynamodb'
+import { DynamoDBDocumentClient, QueryCommand } from '@aws-sdk/lib-dynamodb'
 import { GetTodoListResponse, Todo } from '../handler/get-todo-list'
 
 const REGION = 'ap-northeast-1'
@@ -27,7 +27,7 @@ export class TodoRepository {
       })
       const result = await documentClient.send(command)
       return {
-        todoList: result.Items as Todo[] ?? []
+        todoList: (result.Items as Todo[]) ?? [],
       }
     } catch (e) {
       throw new Error(e)
