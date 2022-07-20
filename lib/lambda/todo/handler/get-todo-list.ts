@@ -19,7 +19,10 @@ export const handler = async (event: GetTodoListRequest) => {
 
   try {
     const result = await getTodoListUseCase.getTodoList(event)
-    return result
+    return {
+      statusCode: 200,
+      body: JSON.stringify(result)
+    }    
   } catch (error) {
     console.log(error)
     return {
